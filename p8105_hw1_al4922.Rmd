@@ -29,6 +29,7 @@ plot(pressure)
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 ```{r}
 library(ggplot2)
+library(tidyverse)
 ```
 
 ```{r}
@@ -70,9 +71,24 @@ Q2_df <- data.frame(
 ##This generates the data frame 
 ```
 ```{r}
-mean(Q2_df$norm_vec)
-mean(Q2_df$log_vec)
-mean(Q2_df$char_vec)
-mean(Q2_df$factor_vec)
+# 1. Numeric variable (Works)
+Q2_df %>% 
+  pull(norm_vec) %>% 
+  mean()
+
+# 2. Logical variable (Works - returns proportion of TRUEs)
+Q2_df %>% 
+  pull(log_vec) %>% 
+  mean()
+
+# 3. Character variable (Returns NA with warning)
+Q2_df %>% 
+  pull(char_vec) %>% 
+  mean()
+
+# 4. Factor variable (Returns NA with warning)
+Q2_df %>% 
+  pull(factor_vec) %>% 
+  mean()
 ```
 
