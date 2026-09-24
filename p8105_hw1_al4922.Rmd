@@ -40,8 +40,39 @@ ncol(penguins)
 ` The penguins dataset describes the various characteristics (habitat and various physical characteristics) of three species of penguins Adelie, Chinstrap and Gentoo. Its key variables are: species, island, bill lengths and depth, body mass, flipper length, year and sex. The data includes 344 individuals and 8 distinct variables and the mean flipper length of the penguins is 200.9 mm.`
 
 ```{r}
-ggplot(data = penguins, 
-       mapping = aes 
-       (x = bill_length_mm, flipper_length_mm, 
-         color = species)) + geom_point()
+penguin_scatterplot <- ggplot(data = penguins, 
+       mapping = aes (x = bill_length_mm, flipper_length_mm, color = species)) + 
+  geom_point()
+
+penguin_scatterplot
 ```
+```{r}
+ggsave("flippervbill.png",
+       plot = penguin_scatterplot,
+       )
+```
+```{r}
+set.seed(367) 
+##This makes it so that the numbers are reproducible
+```
+```{r}
+norm_sample <- rnorm(10)
+##This generates a group with 10 samples form a standard Normal distribution
+```
+
+```{r}
+Q2_df <- data.frame(
+  norm_vec = norm_sample,
+  log_vec = norm_sample > 0,
+  char_vec = letters[1:10], #Generates "a" through "j"
+  factor_vec = factor(c("low", "med", "high", "low", "med", "high", "low", "med", "high", "low"))
+)
+##This generates the data frame 
+```
+```{r}
+mean(Q2_df$norm_vec)
+mean(Q2_df$log_vec)
+mean(Q2_df$char_vec)
+mean(Q2_df$factor_vec)
+```
+
