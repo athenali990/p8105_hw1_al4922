@@ -27,7 +27,9 @@ plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-
+```{r}
+library(ggplot2)
+```
 
 ```{r}
 data("penguins", package = "palmerpenguins")
@@ -36,3 +38,10 @@ nrow(penguins)
 ncol(penguins)
 ```
 ` The penguins dataset describes the various characteristics (habitat and various physical characteristics) of three species of penguins Adelie, Chinstrap and Gentoo. Its key variables are: species, island, bill lengths and depth, body mass, flipper length, year and sex. The data includes 344 individuals and 8 distinct variables and the mean flipper length of the penguins is 200.9 mm.`
+
+```{r}
+ggplot(data = penguins, 
+       mapping = aes 
+       (x = bill_length_mm, flipper_length_mm, 
+         color = species)) + geom_point()
+```
