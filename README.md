@@ -1,2 +1,2 @@
 # Homework1
-Homeswork 1 repository
+Homework 1 repository
