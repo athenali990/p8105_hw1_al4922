@@ -5,7 +5,6 @@ date: "2026-09-23"
 ---
 
 ```{r include=FALSE}
-library(ggplot2)
 library(tidyverse)
 ```
 ## Problem 1
@@ -19,38 +18,40 @@ ncol(penguins) #gives number of variables
 
 ## Penguins Dataset Description 
 
-The penguins dataset describes the various characteristics (habitat and various physical characteristics) of three species of penguins Adelie, Chinstrap and Gentoo. Its key variables are: species, island, bill lengths and depth, body mass, flipper length, year and sex. The data includes 344 individuals and 8 distinct variables and the mean flipper length of the penguins is 200.9 mm.
+The penguins dataset describes the various characteristics (habitat and various physical characteristics) of three species of penguins Adelie, Chinstrap and Gentoo. Its key variables are: species, island, bill lengths and depth, body mass, flipper length, year and sex. The data includes `r nrow(penguins)` individuals and `r ncol(penguins)` distinct variables and the mean flipper length of the penguins is `r round(mean(penguins$flipper_length_mm, na.rm = TRUE), 2)` mm.
 
 
-```{r flippvervbill_scatterplot, echo=FALSE}
+```{r flippvervbill_scatterplot}
 penguin_scatterplot <- ggplot(data = penguins, 
-       mapping = aes (x = bill_length_mm, flipper_length_mm, color = species)) + 
+       mapping = aes(x = bill_length_mm, 
+                      y = flipper_length_mm, 
+                      color = species)) + 
   geom_point()
 
 penguin_scatterplot
 ```
-```{r ggsave to export to project directory}
+```{r export_to_directory}
 ggsave("flippervbill.png",
-       plot = penguin_scatterplot,) #exports plot to directory
+       plot = penguin_scatterplot) #exports plot to directory
 ```
 ## Problem 2
 
 **Step 1: Create Dataframe**
 
-```{r set seed so random sample reproducible}
+```{r set_seed}
 set.seed(367) 
 #This makes it so that the numbers generated are reproducible
 ```
-```{r random sample of size 10}
+```{r norm_sample}
 norm_sample <- rnorm(10, mean = 0, sd = 1)
 #This generates a group with 10 samples form a standard Normal distribution and assigns it to the new variable of norm_sample
 norm_sample
 ```
 
-```{r dataframe creation}
+```{r dataframe_creation}
 q2_df <- data.frame(
   norm_vec = norm_sample, #since data.frame() looks for variable norm_sample when it runs all arguments simultaneously that's why we had to create norm_sample in the last step
-  log_vec = norm_sample > 0, #storing logical vector     that asks if elements of sample greater than one?
+  log_vec = norm_sample > 0, #storing logical vector     that asks if elements of sample greater than zero?
   char_vec = letters[1:10], #generates character vector of length 10
   factor_vec = factor(c("low", "med", "high", "low", "med", "high", "low", "med", "high", "low"))
 ) #generates factor vector of length 10, with 3 different levels
@@ -58,7 +59,7 @@ q2_df <- data.frame(
 ```
 
 **Step 2: Assess Mean of Each Column**
-```{r}
+```{r assess_mean}
 # 1. Numeric variable (Works)
 q2_df %>% 
   pull(norm_vec) %>% 
@@ -80,7 +81,7 @@ q2_df %>%
   mean()
 ```
 **Step 3: Convert To Numeric**
-```{r}
+```{r convert_numeric, eval = FALSE}
 # Convert logical to numeric
 as.numeric(q2_df$log_vec)
 
