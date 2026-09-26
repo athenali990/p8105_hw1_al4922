@@ -38,16 +38,19 @@ summary(penguins)
 nrow(penguins)
 ncol(penguins)
 ```
-` The penguins dataset describes the various characteristics (habitat and various physical characteristics) of three species of penguins Adelie, Chinstrap and Gentoo. Its key variables are: species, island, bill lengths and depth, body mass, flipper length, year and sex. The data includes 344 individuals and 8 distinct variables and the mean flipper length of the penguins is 200.9 mm.`
 
-```{r}
+```{r description} 
+The penguins dataset describes the various characteristics (habitat and various physical characteristics) of three species of penguins Adelie, Chinstrap and Gentoo. Its key variables are: species, island, bill lengths and depth, body mass, flipper length, year and sex. The data includes 344 individuals and 8 distinct variables and the mean flipper length of the penguins is 200.9 mm.
+```
+
+```{r flippvervbill_scatterplot, echo=FALSE}
 penguin_scatterplot <- ggplot(data = penguins, 
        mapping = aes (x = bill_length_mm, flipper_length_mm, color = species)) + 
   geom_point()
 
 penguin_scatterplot
 ```
-```{r}
+```{r ggsave to export to project directory}
 ggsave("flippervbill.png",
        plot = penguin_scatterplot,
        )
@@ -91,4 +94,32 @@ Q2_df %>%
   pull(factor_vec) %>% 
   mean()
 ```
+Question: Why use pull function when we can use dollar sign? 
+
+```{r}
+# Convert logical to numeric
+as.numeric(Q2_df$log_vec)
+
+# Convert character to numeric
+as.numeric(Q2_df$char_vec)
+
+# Convert factor to numeric
+as.numeric(Q2_df$factor_vec)
+```
+### What Happens and Why
+1. Logical ('log_vec'):
+The logical vectors were successfully converted into '1's and '0's because in R, boolean is stored in binary representation and so translating from 'TRUE'/'FALSE' and '1'/'0' works. 
+
+2. Character ('char_vec'):
+Each string was converted into NA because there's no "quantity" assigned to different 'words' or 'strings'. R can't do this conversion. 
+
+3. Factor ('factor_vec'):
+The factor levels were converted into three corresponding numbers (ie. '1', '2', '3') because R stores factor variables as integer vectors in the background. What 'as.numeric()' does is that it takes the text labels 'off' exposing the numeric codes. 
+
+Does this explain what happens when we try to take means? 
+
+1. **Logical variables work directly with `mean()`** because `mean()` performs implicit coercion. Behind the scenes, it converts `TRUE` $\rightarrow$ `1` and `FALSE` $\rightarrow$ `0`. The sum of those values divided by $N$ equals the exact proportion of `TRUE` entries.
+2. **Character variables fail with `mean()`** because implicit coercion encounters non-numeric text and generates `NA`s, triggering the error/warning.
+3. **Factor variables reveal why R has protective guards.** While `as.numeric()` *can* turn a factor into numbers (1, 2, 3), `mean()` strictly refuses to do so automatically. `mean()` checks `is.numeric()` first, sees `FALSE`, and returns `NA`. This prevents you from accidentally calculating a mathematically meaningless "average" on categorical codes (like averaging "Low", "Medium", and "High"). However, if you explicitly force it using `mean(as.numeric(factor_vec))`, R *will* calculate the average of those underlying level numbers.
+
 
