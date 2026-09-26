@@ -4,29 +4,6 @@ output: github_document
 date: "2026-09-23"
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 ```{r include=FALSE}
 library(ggplot2)
 library(tidyverse)
@@ -58,60 +35,64 @@ ggsave("flippervbill.png",
 ```
 ## Problem 2
 
-```{r}
+**Step 1: Create Dataframe**
+
+```{r set seed so random sample reproducible}
 set.seed(367) 
-##This makes it so that the numbers are reproducible
+#This makes it so that the numbers generated are reproducible
 ```
-```{r}
-norm_sample <- rnorm(10)
-##This generates a group with 10 samples form a standard Normal distribution
+```{r random sample of size 10}
+norm_sample <- rnorm(10, mean = 0, sd = 1)
+#This generates a group with 10 samples form a standard Normal distribution and assigns it to the new variable of norm_sample
+norm_sample
 ```
 
-```{r}
-Q2_df <- data.frame(
-  norm_vec = norm_sample,
-  log_vec = norm_sample > 0,
-  char_vec = letters[1:10], #Generates "a" through "j"
+```{r dataframe creation}
+q2_df <- data.frame(
+  norm_vec = norm_sample, #since data.frame() looks for variable norm_sample when it runs all arguments simultaneously that's why we had to create norm_sample in the last step
+  log_vec = norm_sample > 0, #storing logical vector     that asks if elements of sample greater than one?
+  char_vec = letters[1:10], #generates character vector of length 10
   factor_vec = factor(c("low", "med", "high", "low", "med", "high", "low", "med", "high", "low"))
-)
-##This generates the data frame 
+) #generates factor vector of length 10, with 3 different levels
+#This generates the data frame 
 ```
+
+**Step 2: Assess Mean of Each Column**
 ```{r}
 # 1. Numeric variable (Works)
-Q2_df %>% 
+q2_df %>% 
   pull(norm_vec) %>% 
   mean()
 
 # 2. Logical variable (Works - returns proportion of TRUEs)
-Q2_df %>% 
+q2_df %>% 
   pull(log_vec) %>% 
   mean()
 
 # 3. Character variable (Returns NA with warning)
-Q2_df %>% 
+q2_df %>% 
   pull(char_vec) %>% 
   mean()
 
 # 4. Factor variable (Returns NA with warning)
-Q2_df %>% 
+q2_df %>% 
   pull(factor_vec) %>% 
   mean()
 ```
-Question: Why use pull function when we can use dollar sign? 
-
+**Step 3: Convert To Numeric**
 ```{r}
 # Convert logical to numeric
-as.numeric(Q2_df$log_vec)
+as.numeric(q2_df$log_vec)
 
 # Convert character to numeric
-as.numeric(Q2_df$char_vec)
+as.numeric(q2_df$char_vec)
 
 # Convert factor to numeric
-as.numeric(Q2_df$factor_vec)
+as.numeric(q2_df$factor_vec)
 ```
-### What Happens and Why
+## What Happens and Why
 1. Logical ('log_vec'):
-The logical vectors were successfully converted into '1's and '0's because in R, boolean is stored in binary representation and so translating from 'TRUE'/'FALSE' and '1'/'0' works. 
+The logical vectors were successfully converted into '1's and '0's because in R, boolean is stored in binary representation and so translating from 'TRUE'/'FALSE' to '1'/'0' works. 
 
 2. Character ('char_vec'):
 Each string was converted into NA because there's no "quantity" assigned to different 'words' or 'strings'. R can't do this conversion. 
@@ -119,10 +100,11 @@ Each string was converted into NA because there's no "quantity" assigned to diff
 3. Factor ('factor_vec'):
 The factor levels were converted into three corresponding numbers (ie. '1', '2', '3') because R stores factor variables as integer vectors in the background. What 'as.numeric()' does is that it takes the text labels 'off' exposing the numeric codes. 
 
-Does this explain what happens when we try to take means? 
+## Does this explain what happens when we try to take means? 
+1. **Logical variables work directly with `mean()`** because mean() performs implicit coercion. This means that in the background, it converts `TRUE` -> `1` and `FALSE` -> `0`. With `TRUE` and `FALSE` converted into numbers like with the as.numeric function, a mean can be calculated. 
 
-1. **Logical variables work directly with `mean()`** because `mean()` performs implicit coercion. Behind the scenes, it converts `TRUE` $\rightarrow$ `1` and `FALSE` $\rightarrow$ `0`. The sum of those values divided by $N$ equals the exact proportion of `TRUE` entries.
-2. **Character variables fail with `mean()`** because implicit coercion encounters non-numeric text and generates `NA`s, triggering the error/warning.
-3. **Factor variables reveal why R has protective guards.** While `as.numeric()` *can* turn a factor into numbers (1, 2, 3), `mean()` strictly refuses to do so automatically. `mean()` checks `is.numeric()` first, sees `FALSE`, and returns `NA`. This prevents you from accidentally calculating a mathematically meaningless "average" on categorical codes (like averaging "Low", "Medium", and "High"). However, if you explicitly force it using `mean(as.numeric(factor_vec))`, R *will* calculate the average of those underlying level numbers.
+2. **Character variables fail with `mean()`** because implicit coercion encounters non-numeric text and generates `NA`s, triggering the error/warning. This means that it cannot be 'forced' into a number and so no mean can be calculated. 
+
+3. **Factor variables reveal why R has protective guards.** While `as.numeric()` can turn a factor into numbers (1, 2, 3), `mean()` doesn't perform implicit coercion here. Here, `mean()` checks `is.numeric()` first, sees `FALSE`, and returns `NA`. This prevents you from accidentally calculating a mathematically meaningless "average" on categorical codes (like averaging "Low", "Medium", and "High"). However, if you explicitly force it using a nested function like `mean(as.numeric(factor_vec))`, R *will* calculate the average of those underlying level numbers created by the as.numeric function. 
 
 
